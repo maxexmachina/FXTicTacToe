@@ -22,7 +22,9 @@ public class TicView extends VBox {
         grid.setVgap(10);
         grid.setHgap(10);
 
-        Label gameStatus = new Label("Place X in an empty box");
+        Label gameStatus = new Label();
+        gameStatus.textProperty().bindBidirectional(viewModel.labelTextProperty());
+        gameStatus.setText("Put X into an empty box");
 
         gameStatus.setPadding(new Insets(30));
         gameStatus.setFont(new Font("Arial", 25));
@@ -30,19 +32,13 @@ public class TicView extends VBox {
         for (int i = 0; i < 3; i++) {
             gridMatrix.add(new ArrayList<>());
             for (int j = 0; j < 3; j++) {
-                Button temp = new Button("");
+                Button temp = new Button();
                 int finalJ = j;
                 int finalI = i;
                 temp.setOnAction(event -> {
-                    String res = viewModel.processBoxClick(finalI, finalJ);
-                    temp.setText(res);
-                    if (res.equals("X")) {
-                        gameStatus.setText("Place O in an empty box");
-                    } else if (res.equals("O")) {
-                        gameStatus.setText("Place X in an empty box");
-                    }
+                    temp.setText(viewModel.processBoxClick(finalI, finalJ));
                     // System.out.println("Put " + res + " into " + finalI + ":" + finalJ);
-                });
+                    });
 
                 temp.setStyle("-fx-focus-color: transparent;");
                 temp.setStyle("-fx-font-size:40");
