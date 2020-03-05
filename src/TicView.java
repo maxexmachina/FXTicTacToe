@@ -15,22 +15,37 @@ public class TicView extends VBox {
 
     public TicView() {
 
+        TicViewModel viewModel = new TicViewModel();
+
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10));
         grid.setVgap(10);
         grid.setHgap(10);
 
+        Label gameStatus = new Label("Place X in an empty box");
+
+        gameStatus.setPadding(new Insets(30));
+        gameStatus.setFont(new Font("Arial", 25));
+
         for (int i = 0; i < 3; i++) {
             gridMatrix.add(new ArrayList<>());
             for (int j = 0; j < 3; j++) {
-                Button temp = new Button("X");
+                Button temp = new Button("");
                 int finalJ = j;
                 int finalI = i;
                 temp.setOnAction(event -> {
-                    System.out.println("Clicked " + finalI + ":" + finalJ);
+                    String res = viewModel.processBoxClick(finalI, finalJ);
+                    temp.setText(res);
+                    if (res.equals("X")) {
+                        gameStatus.setText("Place O in an empty box");
+                    } else if (res.equals("O")) {
+                        gameStatus.setText("Place X in an empty box");
+                    }
+                    // System.out.println("Put " + res + " into " + finalI + ":" + finalJ);
                 });
 
                 temp.setStyle("-fx-focus-color: transparent;");
+                temp.setStyle("-fx-font-size:40");
                 temp.setPrefSize(100, 100);
 
                 grid.add(temp, j + 1, i + 1);
@@ -38,10 +53,6 @@ public class TicView extends VBox {
             }
         }
 
-        Label gameStatus = new Label("Place X in an empty box");
-
-        gameStatus.setPadding(new Insets(30));
-        gameStatus.setFont(new Font("Arial", 25));
 
         Separator sep = new Separator();
 
@@ -68,6 +79,7 @@ public class TicView extends VBox {
         Button newGameButton = new Button("New Game");
         Button saveButton = new Button("Save");
         Button loadButton = new Button("Load");
+
 
         bar.getButtons().addAll(newGameButton, saveButton, loadButton);
 
