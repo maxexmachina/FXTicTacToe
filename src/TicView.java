@@ -17,11 +17,11 @@ public class TicView extends VBox {
 
         TicViewModel viewModel = new TicViewModel();
 
-        Label gameStatus = new Label();
-        gameStatus.setPadding(new Insets(30));
-        gameStatus.setFont(new Font("Arial", 25));
-        gameStatus.textProperty().bindBidirectional(viewModel.labelTextProperty());
-        gameStatus.setText("Put X in an empty box");
+        Label gameInfoLabel = new Label();
+        gameInfoLabel.setPadding(new Insets(30));
+        gameInfoLabel.setFont(new Font("Arial", 25));
+        gameInfoLabel.textProperty().bindBidirectional(viewModel.labelTextProperty());
+        gameInfoLabel.setText("Put X in an empty box");
 
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10));
@@ -50,9 +50,9 @@ public class TicView extends VBox {
 
         Separator sep = new Separator();
 
-        Button nextButton = new Button("Next Round");
-        nextButton.visibleProperty().bindBidirectional(viewModel.gameDoneProperty());
-        nextButton.setOnAction(event -> {
+        Button nextRoundButton = new Button("Next Round");
+        nextRoundButton.visibleProperty().bindBidirectional(viewModel.gameDoneProperty());
+        nextRoundButton.setOnAction(event -> {
             viewModel.processNext();
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
@@ -62,7 +62,7 @@ public class TicView extends VBox {
         });
 
         VBox left = new VBox();
-        left.getChildren().addAll(grid, sep, gameStatus, nextButton);
+        left.getChildren().addAll(grid, sep, gameInfoLabel, nextRoundButton);
 
         TableColumn<GameResultObject, String> crossColumn = new TableColumn<>("X");
         TableColumn<GameResultObject, String> naughtColumn = new TableColumn<>("O");
