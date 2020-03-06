@@ -11,23 +11,22 @@ import java.util.ArrayList;
 public class TicView extends VBox {
 
     private ArrayList<ArrayList<Button>> gridMatrix = new ArrayList<>();
-    private TableView<GameResult> statTable = new TableView<>();
+    private TableView<GameResultObject> statTable = new TableView<>();
 
     public TicView() {
 
         TicViewModel viewModel = new TicViewModel();
 
+        Label gameStatus = new Label();
+        gameStatus.setPadding(new Insets(30));
+        gameStatus.setFont(new Font("Arial", 25));
+        gameStatus.textProperty().bindBidirectional(viewModel.labelTextProperty());
+        gameStatus.setText("Put X in an empty box");
+
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10));
         grid.setVgap(10);
         grid.setHgap(10);
-
-        Label gameStatus = new Label();
-        gameStatus.textProperty().bindBidirectional(viewModel.labelTextProperty());
-        gameStatus.setText("Put X into an empty box");
-
-        gameStatus.setPadding(new Insets(30));
-        gameStatus.setFont(new Font("Arial", 25));
 
         for (int i = 0; i < 3; i++) {
             gridMatrix.add(new ArrayList<>());
@@ -37,9 +36,9 @@ public class TicView extends VBox {
                 int finalI = i;
                 temp.setOnAction(event -> {
                     temp.setText(viewModel.processBoxClick(finalI, finalJ));
-                    // System.out.println("Put " + res + " into " + finalI + ":" + finalJ);
                     });
 
+                temp.disableProperty().bindBidirectional(viewModel.gameDoneProperty());
                 temp.setStyle("-fx-focus-color: transparent;");
                 temp.setStyle("-fx-font-size:40");
                 temp.setPrefSize(100, 100);
@@ -49,38 +48,44 @@ public class TicView extends VBox {
             }
         }
 
-
         Separator sep = new Separator();
 
+        Button nextButton = new Button("Next Round");
+        nextButton.visibleProperty().bindBidirectional(viewModel.gameDoneProperty());
+        nextButton.setOnAction(event -> {
+            viewModel.processNext();
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    gridMatrix.get(i).get(j).setText("");
+                }
+            }
+        });
+
         VBox left = new VBox();
-        left.getChildren().addAll(grid, sep, gameStatus);
+        left.getChildren().addAll(grid, sep, gameStatus, nextButton);
 
-        TableColumn<GameResult, String> crossColumn = new TableColumn<>("X");
-        TableColumn<GameResult, String> naughtColumn = new TableColumn<>("O");
-        crossColumn.setStyle( "-fx-alignment: CENTER;");
-        naughtColumn.setStyle( "-fx-alignment: CENTER;");
-        statTable.getColumns().addAll(crossColumn, naughtColumn);
-
-        statTable.getItems().addAll(new GameResult(1, 0),
-                                    new GameResult(1, 0),
-                                    new GameResult(1, 0));
+        TableColumn<GameResultObject, String> crossColumn = new TableColumn<>("X");
+        TableColumn<GameResultObject, String> naughtColumn = new TableColumn<>("O");
 
         crossColumn.setCellValueFactory(new PropertyValueFactory<>("crossWins"));
         naughtColumn.setCellValueFactory(new PropertyValueFactory<>("naughtWins"));
 
+        crossColumn.setStyle( "-fx-alignment: CENTER;");
+        naughtColumn.setStyle( "-fx-alignment: CENTER;");
+
         statTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        statTable.getColumns().addAll(crossColumn, naughtColumn);
+        loadSampleData();
 
-
-        ButtonBar bar = new ButtonBar();
+        ButtonBar statManagerBar = new ButtonBar();
         Button newGameButton = new Button("New Game");
         Button saveButton = new Button("Save");
         Button loadButton = new Button("Load");
 
-
-        bar.getButtons().addAll(newGameButton, saveButton, loadButton);
+        statManagerBar.getButtons().addAll(newGameButton, saveButton, loadButton);
 
         VBox right = new VBox();
-        right.getChildren().addAll(statTable, bar);
+        right.getChildren().addAll(statTable, statManagerBar);
 
         HBox mainWrap = new HBox();
         mainWrap.getChildren().addAll(left, right);
@@ -88,11 +93,17 @@ public class TicView extends VBox {
         getChildren().addAll(mainWrap);
     }
 
-    public class GameResult {
+    private void loadSampleData() {
+        statTable.getItems().addAll(new GameResultObject(1, 0),
+                new GameResultObject(1, 0),
+                new GameResultObject(1, 0));
+    }
+
+    public class GameResultObject {
         private Integer crossWins;
         private Integer naughtWins;
 
-        public GameResult(Integer crossWins, Integer naughtWins) {
+        public GameResultObject(Integer crossWins, Integer naughtWins) {
             this.crossWins = crossWins;
             this.naughtWins = naughtWins;
         }
