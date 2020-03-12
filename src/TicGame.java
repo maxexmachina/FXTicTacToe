@@ -1,5 +1,7 @@
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
 import java.util.ArrayList;
 
@@ -10,6 +12,32 @@ public class TicGame {
     private ArrayList<ArrayList<Integer>> gridState = new ArrayList<>();
     private BooleanProperty gameDone = new SimpleBooleanProperty();
     private String gameResult;
+    private IntegerProperty xScore = new SimpleIntegerProperty();
+    private IntegerProperty oScore = new SimpleIntegerProperty();
+
+    public int getxScore() {
+        return xScore.get();
+    }
+
+    public IntegerProperty xScoreProperty() {
+        return xScore;
+    }
+
+    public int getoScore() {
+        return oScore.get();
+    }
+
+    public IntegerProperty oScoreProperty() {
+        return oScore;
+    }
+
+    public void setxScore(int xScore) {
+        this.xScore.set(xScore);
+    }
+
+    public void setoScore(int oScore) {
+        this.oScore.set(oScore);
+    }
 
     public BooleanProperty gameDoneProperty() {
         return gameDone;
@@ -22,6 +50,8 @@ public class TicGame {
     public TicGame() {
         currentPlayer = 1;
         turnCount = 0;
+        setoScore(0);
+        setxScore(0);
         setGameDone(false);
 
         for (int i = 0; i < 3; i++) {
@@ -57,18 +87,27 @@ public class TicGame {
             }
         }
         else {
-            return gridState.get(i).get(j);
+            return gridState.get(i).get(j) + 2;
         }
     }
 
     private void checkGameResult(int i, int j) {
         if (turnCount > 4) {
-            if (winCheck(i ,j)) {
+            if (winCheck(i , j)) {
                 setGameDone(true);
+                if (currentPlayer == 1) {
+                    setxScore(getxScore() + 1);
+                } else {
+                    setoScore(getoScore() + 1);
+                }
                 gameResult = "Player " + ((currentPlayer == 1) ? "X" : "O") + " wins";
+                System.out.println(getxScore() + " " + getoScore());
             } else if (turnCount == 8) {
                 setGameDone(true);
+                setoScore(getoScore() + 1);
+                setxScore(getxScore() + 1);
                 gameResult = "Draw";
+                System.out.println(getxScore() + " " + getoScore());
             }
         }
     }

@@ -1,12 +1,34 @@
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 
 public class TicViewModel {
     private TicGame game;
     private BooleanProperty gameDone = new SimpleBooleanProperty();
-    private int lastSymbol;
+    private IntegerProperty oScore = new SimpleIntegerProperty();
+    private IntegerProperty xScore = new SimpleIntegerProperty();
+
+    public Integer getoScore() {
+        return oScore.get();
+    }
+
+    public IntegerProperty oScoreProperty() {
+        return oScore;
+    }
+
+    public void setoScore(int oScore) {
+        this.oScore.set(oScore);
+    }
+
+    public Integer getxScore() {
+        return xScore.get();
+    }
+
+    public IntegerProperty xScoreProperty() {
+        return xScore;
+    }
+
+    public void setxScore(int xScore) {
+        this.xScore.set(xScore);
+    }
 
     private StringProperty labelText = new SimpleStringProperty();
 
@@ -21,6 +43,8 @@ public class TicViewModel {
     public TicViewModel() {
         game = new TicGame();
         gameDone.bindBidirectional(game.gameDoneProperty());
+        oScore.bindBidirectional(game.oScoreProperty());
+        xScore.bindBidirectional(game.xScoreProperty());
     }
 
     public boolean isGameDone() {
@@ -33,30 +57,29 @@ public class TicViewModel {
 
             if (isGameDone()) {
                 setLabelText(game.getGameResult());
-            } else if (lastSymbol != 1) {
+            } else
                 setLabelText("Put O in an empty box");
-            }
 
-            lastSymbol = 1;
             return "X";
 
         } else if (clickResult == 0)  {
 
             if (isGameDone()) {
                 setLabelText(game.getGameResult());
-            } else if (lastSymbol != 0) {
+            } else
                 setLabelText("Put X in an empty box");
-            }
 
-            lastSymbol = 0;
             return  "O";
+        } else if (clickResult == 2) {
+            return "O";
+        } else if (clickResult == 3) {
+            return "X";
         }
-        return "Uh oh";
+        return "Something";
     }
 
     public void processNext() {
         game.resetGame();
-        lastSymbol = -1;
         setLabelText("Put X in an empty box");
     }
 
@@ -64,8 +87,18 @@ public class TicViewModel {
         return labelText;
     }
 
+    public void setGameDone(boolean gameDone) {
+        this.gameDone.set(gameDone);
+    }
+
+    public void processNew() {
+        setoScore(0);
+        setxScore(0);
+        setGameDone(false);
+        game.resetGame();
+    }
+    
     // TODO implement stat methods
-    public void processNew() { }
     public void processSave() { }
     public void processLoad() { }
 }

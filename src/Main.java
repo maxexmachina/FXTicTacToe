@@ -11,6 +11,7 @@ public class Main extends Application {
 
         primaryStage.setTitle("Scuffed Tic Tac Toe");
         primaryStage.setScene(new Scene(view));
+        primaryStage.getScene().getStylesheets().add("file:resources/style.css");
         primaryStage.getIcons().add(new Image("file:resources/img.png"));
         primaryStage.show();
     }
