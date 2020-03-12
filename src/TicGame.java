@@ -7,11 +7,11 @@ import java.util.ArrayList;
 
 public class TicGame {
 
+    private ArrayList<ArrayList<Integer>> gridState = new ArrayList<>();
     private Integer currentPlayer;
     private Integer turnCount;
-    private ArrayList<ArrayList<Integer>> gridState = new ArrayList<>();
-    private BooleanProperty gameDone = new SimpleBooleanProperty();
     private String gameResult;
+    private BooleanProperty gameDone = new SimpleBooleanProperty();
     private IntegerProperty xScore = new SimpleIntegerProperty();
     private IntegerProperty oScore = new SimpleIntegerProperty();
 

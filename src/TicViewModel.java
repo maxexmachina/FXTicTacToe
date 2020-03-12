@@ -2,42 +2,33 @@ import javafx.beans.property.*;
 
 public class TicViewModel {
     private TicGame game;
+    private StringProperty labelText = new SimpleStringProperty();
     private BooleanProperty gameDone = new SimpleBooleanProperty();
     private IntegerProperty oScore = new SimpleIntegerProperty();
     private IntegerProperty xScore = new SimpleIntegerProperty();
 
-    public Integer getoScore() {
-        return oScore.get();
-    }
-
-    public IntegerProperty oScoreProperty() {
-        return oScore;
-    }
-
     public void setoScore(int oScore) {
         this.oScore.set(oScore);
-    }
-
-    public Integer getxScore() {
-        return xScore.get();
-    }
-
-    public IntegerProperty xScoreProperty() {
-        return xScore;
     }
 
     public void setxScore(int xScore) {
         this.xScore.set(xScore);
     }
 
-    private StringProperty labelText = new SimpleStringProperty();
-
     public BooleanProperty gameDoneProperty() {
         return gameDone;
     }
 
+    public void setGameDone(boolean gameDone) {
+        this.gameDone.set(gameDone);
+    }
+
     public void setLabelText(String labelTextProperty) {
         this.labelText.set(labelTextProperty);
+    }
+
+    public StringProperty labelTextProperty() {
+        return labelText;
     }
 
     public TicViewModel() {
@@ -83,21 +74,13 @@ public class TicViewModel {
         setLabelText("Put X in an empty box");
     }
 
-    public StringProperty labelTextProperty() {
-        return labelText;
-    }
-
-    public void setGameDone(boolean gameDone) {
-        this.gameDone.set(gameDone);
-    }
-
     public void processNew() {
         setoScore(0);
         setxScore(0);
         setGameDone(false);
         game.resetGame();
     }
-    
+
     // TODO implement stat methods
     public void processSave() { }
     public void processLoad() { }

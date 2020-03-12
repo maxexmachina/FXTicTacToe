@@ -48,7 +48,6 @@ public class TicView extends VBox {
         nextRoundButton.setId("next-round");
         nextRoundButton.visibleProperty().bindBidirectional(viewModel.gameDoneProperty());
         nextRoundButton.setOnAction(event -> {
-            statTable.getItems().get(0).setCrossWins(13);
             viewModel.processNext();
             clearGrid();
         });
@@ -56,12 +55,12 @@ public class TicView extends VBox {
         VBox left = new VBox();
         left.getChildren().addAll(grid, sep, gameInfoLabel, nextRoundButton);
 
+
         TableColumn<GameResultObject, String> crossColumn = new TableColumn<>("X");
         TableColumn<GameResultObject, String> naughtColumn = new TableColumn<>("O");
 
         crossColumn.setCellValueFactory(data -> data.getValue().crossWins());
         naughtColumn.setCellValueFactory(data -> data.getValue().naughtWins());
-
         crossColumn.setId("cross-column");
         naughtColumn.setId("naught-column");
 
@@ -69,21 +68,20 @@ public class TicView extends VBox {
         statTable.getColumns().addAll(crossColumn, naughtColumn);
         loadSampleData();
 
-        ButtonBar statManagerBar = new ButtonBar();
+        ButtonBar statButtons = new ButtonBar();
         Button newGameButton = new Button("New Game");
         newGameButton.setOnAction(event -> {
             viewModel.processNew();
             clearGrid();
             gameInfoLabel.setText("Put X in an empty box");
-
         });
         Button saveButton = new Button("Save");
         Button loadButton = new Button("Load");
 
-        statManagerBar.getButtons().addAll(newGameButton, saveButton, loadButton);
+        statButtons.getButtons().addAll(newGameButton, saveButton, loadButton);
 
         VBox right = new VBox();
-        right.getChildren().addAll(statTable, statManagerBar);
+        right.getChildren().addAll(statTable, statButtons);
 
         HBox mainWrap = new HBox();
         mainWrap.getChildren().addAll(left, right);

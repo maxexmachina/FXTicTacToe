@@ -9,7 +9,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         TicView view = new TicView();
 
-        primaryStage.setTitle("Scuffed Tic Tac Toe");
+        primaryStage.setTitle("Tic Tac Toe");
         primaryStage.setScene(new Scene(view));
         primaryStage.getScene().getStylesheets().add("file:resources/style.css");
         primaryStage.getIcons().add(new Image("file:resources/img.png"));
