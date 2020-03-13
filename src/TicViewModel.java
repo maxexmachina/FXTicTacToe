@@ -1,4 +1,5 @@
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 
 public class TicViewModel {
     private TicGame game;
@@ -6,6 +7,19 @@ public class TicViewModel {
     private BooleanProperty gameDone = new SimpleBooleanProperty();
     private IntegerProperty oScore = new SimpleIntegerProperty();
     private IntegerProperty xScore = new SimpleIntegerProperty();
+    private ListProperty<TicView.GameResultObject> results = new SimpleListProperty<>(FXCollections.observableArrayList());
+
+    public ListProperty<TicView.GameResultObject> resultsProperty() {
+        return results;
+    }
+
+    public TicViewModel() {
+        game = new TicGame();
+        gameDone.bindBidirectional(game.gameDoneProperty());
+        oScore.bindBidirectional(game.oScoreProperty());
+        xScore.bindBidirectional(game.xScoreProperty());
+        results.add(new TicView.GameResultObject(0, 0));
+    }
 
     public void setoScore(int oScore) {
         this.oScore.set(oScore);
@@ -31,13 +45,6 @@ public class TicViewModel {
         return labelText;
     }
 
-    public TicViewModel() {
-        game = new TicGame();
-        gameDone.bindBidirectional(game.gameDoneProperty());
-        oScore.bindBidirectional(game.oScoreProperty());
-        xScore.bindBidirectional(game.xScoreProperty());
-    }
-
     public boolean isGameDone() {
         return gameDone.get();
     }
@@ -47,6 +54,8 @@ public class TicViewModel {
         if (clickResult == 1) {
 
             if (isGameDone()) {
+                results.get(0).crossWins().setValue(xScore.getValue().toString());
+                results.get(0).naughtWins().setValue(oScore.getValue().toString());
                 setLabelText(game.getGameResult());
             } else
                 setLabelText("Put O in an empty box");
@@ -56,6 +65,8 @@ public class TicViewModel {
         } else if (clickResult == 0)  {
 
             if (isGameDone()) {
+                results.get(0).crossWins().setValue(xScore.getValue().toString());
+                results.get(0).naughtWins().setValue(oScore.getValue().toString());
                 setLabelText(game.getGameResult());
             } else
                 setLabelText("Put X in an empty box");
@@ -75,13 +86,15 @@ public class TicViewModel {
     }
 
     public void processNew() {
+        if(xScore.get() != 0 && oScore.get() != 0)
+            results.add(0, new TicView.GameResultObject(0, 0));
         setoScore(0);
         setxScore(0);
         setGameDone(false);
         game.resetGame();
     }
 
-    // TODO implement stat methods
+    // TODO implement file methods
     public void processSave() { }
     public void processLoad() { }
 }

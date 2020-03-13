@@ -1,4 +1,5 @@
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -10,9 +11,12 @@ public class TicView extends VBox {
 
     private ArrayList<ArrayList<Button>> gridMatrix = new ArrayList<>();
     private TableView<GameResultObject> statTable = new TableView<>();
+    private ListProperty<GameResultObject> gameResults = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     public TicView() {
         TicViewModel viewModel = new TicViewModel();
+        gameResults.bind(viewModel.resultsProperty());
+        statTable.setItems(gameResults);
 
         Label gameInfoLabel = new Label();
         gameInfoLabel.setId("info-label");
@@ -66,7 +70,7 @@ public class TicView extends VBox {
 
         statTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         statTable.getColumns().addAll(crossColumn, naughtColumn);
-        loadSampleData();
+        //loadSampleData();
 
         ButtonBar statButtons = new ButtonBar();
         Button newGameButton = new Button("New Game");
@@ -97,12 +101,6 @@ public class TicView extends VBox {
         }
     }
 
-    private void loadSampleData() {
-        statTable.getItems().addAll(new GameResultObject(1, 0),
-                new GameResultObject(1, 0),
-                new GameResultObject(1, 0));
-    }
-
     public static class GameResultObject {
         private SimpleStringProperty crossWins;
         private SimpleStringProperty naughtWins;
@@ -112,28 +110,12 @@ public class TicView extends VBox {
             this.naughtWins =  new SimpleStringProperty(naughtWins.toString());
         }
 
-        public void setCrossWins(Integer crossWins) {
-            this.crossWins = new SimpleStringProperty(crossWins.toString());
-        }
-
         public StringProperty crossWins() {
             return crossWins;
         }
 
         public StringProperty naughtWins() {
             return naughtWins;
-        }
-
-        public void setNaughtWins(Integer naughtWins) {
-            this.naughtWins = new SimpleStringProperty(naughtWins.toString());
-        }
-
-        public String getCrossWins() {
-            return crossWins.get();
-        }
-
-        public String getNaughtWins() {
-            return naughtWins.get();
         }
     }
 }
