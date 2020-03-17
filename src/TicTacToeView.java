@@ -4,14 +4,18 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class TicTacToeView extends VBox {
 
     private ArrayList<ArrayList<Button>> gridMatrix = new ArrayList<>();
 
-    public TicTacToeView() {
+    public TicTacToeView(Stage primaryStage) {
         TicTacToeViewModel viewModel = new TicTacToeViewModel();
 
         ListProperty<GameResultObject> gameResults = new SimpleListProperty<>(FXCollections.observableArrayList());
@@ -77,7 +81,34 @@ public class TicTacToeView extends VBox {
             clearGrid();
         });
         Button saveButton = new Button("Save");
+        saveButton.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+            fileChooser.getExtensionFilters().add(extFilter);
+
+            File savedFile = fileChooser.showSaveDialog(primaryStage);
+            try {
+            viewModel.processSave(savedFile);
+            } catch (IOException e) {
+                Alert errorDialog = new Alert(Alert.AlertType.ERROR);
+                errorDialog.setHeaderText("IOException thrown in Save method\n");
+                errorDialog.setContentText(e.getMessage());
+                errorDialog.showAndWait();
+            }
+        });
         Button loadButton = new Button("Load");
+        loadButton.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+            File selectedFile = fileChooser.showOpenDialog(primaryStage);
+            try {
+                viewModel.processLoad(selectedFile);
+            } catch (IOException e) {
+                Alert errorDialog = new Alert(Alert.AlertType.ERROR);
+                errorDialog.setHeaderText("IOException thrown in Load method\n");
+                errorDialog.setContentText(e.getMessage());
+                errorDialog.showAndWait();
+            }
+        });
 
         statButtons.getButtons().addAll(newGameButton, saveButton, loadButton);
 

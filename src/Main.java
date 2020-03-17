@@ -7,7 +7,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        TicTacToeView view = new TicTacToeView();
+        TicTacToeView view = new TicTacToeView(primaryStage);
 
         primaryStage.setTitle("Tic Tac Toe");
         primaryStage.setScene(new Scene(view));

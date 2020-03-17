@@ -1,6 +1,11 @@
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class TicTacToeViewModel {
     private TicTacToeGame game;
     private StringProperty labelText = new SimpleStringProperty("Put X in an empty box");
@@ -105,7 +110,28 @@ public class TicTacToeViewModel {
         game.resetGame();
     }
 
-    // TODO implement file methods
-    public void processSave() { }
-    public void processLoad() { }
+    public void processSave(File file) throws IOException {
+        if (file != null) {
+            List<String> resultList = new ArrayList<>();
+            for (TicTacToeView.GameResultObject res : results.get()) {
+                resultList.add(res.crossWins().getValue() + "," + res.naughtWins().getValue());
+            }
+            FileUtils.writeAll(file.getPath(), resultList);
+        }
+    }
+
+    public void processLoad(File file) throws IOException {
+        if (file != null) {
+            results.clear();
+            List<String> loadedList = FileUtils.readAll(file.getPath());
+            for (String string: loadedList) {
+                String[] parsed = string.split(",");
+                int x = Integer.parseInt(parsed[0]);
+                int o = Integer.parseInt(parsed[1]);
+                results.add(new TicTacToeView.GameResultObject(x, o));
+            }
+            xScore = Integer.parseInt(results.get(0).crossWins().getValue());
+            oScore = Integer.parseInt(results.get(0).naughtWins().getValue());
+        }
+    }
 }
