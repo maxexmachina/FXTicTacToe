@@ -1,43 +1,14 @@
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 
 import java.util.ArrayList;
 
-public class TicGame {
-
+public class TicTacToeGame {
     private ArrayList<ArrayList<Integer>> gridState = new ArrayList<>();
     private Integer currentPlayer;
     private Integer turnCount;
     private String gameResult;
     private BooleanProperty gameDone = new SimpleBooleanProperty();
-    private IntegerProperty xScore = new SimpleIntegerProperty();
-    private IntegerProperty oScore = new SimpleIntegerProperty();
-
-    public int getxScore() {
-        return xScore.get();
-    }
-
-    public IntegerProperty xScoreProperty() {
-        return xScore;
-    }
-
-    public int getoScore() {
-        return oScore.get();
-    }
-
-    public IntegerProperty oScoreProperty() {
-        return oScore;
-    }
-
-    public void setxScore(int xScore) {
-        this.xScore.set(xScore);
-    }
-
-    public void setoScore(int oScore) {
-        this.oScore.set(oScore);
-    }
 
     public BooleanProperty gameDoneProperty() {
         return gameDone;
@@ -47,11 +18,14 @@ public class TicGame {
         this.gameDone.set(gameDone);
     }
 
-    public TicGame() {
+    public String getGameResult() {
+        return gameResult;
+    }
+
+    public TicTacToeGame() {
+        gameResult = "None";
         currentPlayer = 1;
         turnCount = 0;
-        setoScore(0);
-        setxScore(0);
         setGameDone(false);
 
         for (int i = 0; i < 3; i++) {
@@ -60,10 +34,6 @@ public class TicGame {
                 gridState.get(i).add(-1);
             }
         }
-    }
-
-    public String getGameResult() {
-        return gameResult;
     }
 
     public int processMove(int i, int j) {
@@ -95,19 +65,10 @@ public class TicGame {
         if (turnCount > 4) {
             if (winCheck(i , j)) {
                 setGameDone(true);
-                if (currentPlayer == 1) {
-                    setxScore(getxScore() + 1);
-                } else {
-                    setoScore(getoScore() + 1);
-                }
                 gameResult = "Player " + ((currentPlayer == 1) ? "X" : "O") + " wins";
-                System.out.println(getxScore() + " " + getoScore());
             } else if (turnCount == 8) {
                 setGameDone(true);
-                setoScore(getoScore() + 1);
-                setxScore(getxScore() + 1);
                 gameResult = "Draw";
-                System.out.println(getxScore() + " " + getoScore());
             }
         }
     }
@@ -158,5 +119,6 @@ public class TicGame {
         turnCount = 0;
         currentPlayer = 1;
         setGameDone(false);
+        gameResult = "None";
     }
 }

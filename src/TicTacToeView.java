@@ -7,21 +7,22 @@ import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 
-public class TicView extends VBox {
+public class TicTacToeView extends VBox {
 
     private ArrayList<ArrayList<Button>> gridMatrix = new ArrayList<>();
-    private TableView<GameResultObject> statTable = new TableView<>();
-    private ListProperty<GameResultObject> gameResults = new SimpleListProperty<>(FXCollections.observableArrayList());
 
-    public TicView() {
-        TicViewModel viewModel = new TicViewModel();
+    public TicTacToeView() {
+        TicTacToeViewModel viewModel = new TicTacToeViewModel();
+
+        ListProperty<GameResultObject> gameResults = new SimpleListProperty<>(FXCollections.observableArrayList());
         gameResults.bind(viewModel.resultsProperty());
+
+        TableView<GameResultObject> statTable = new TableView<>();
         statTable.setItems(gameResults);
 
         Label gameInfoLabel = new Label();
         gameInfoLabel.setId("info-label");
         gameInfoLabel.textProperty().bindBidirectional(viewModel.labelTextProperty());
-        gameInfoLabel.setText("Put X in an empty box");
 
         GridPane grid = new GridPane();
         grid.getStyleClass().add("grid-pane");
@@ -59,10 +60,8 @@ public class TicView extends VBox {
         VBox left = new VBox();
         left.getChildren().addAll(grid, sep, gameInfoLabel, nextRoundButton);
 
-
         TableColumn<GameResultObject, String> crossColumn = new TableColumn<>("X");
         TableColumn<GameResultObject, String> naughtColumn = new TableColumn<>("O");
-
         crossColumn.setCellValueFactory(data -> data.getValue().crossWins());
         naughtColumn.setCellValueFactory(data -> data.getValue().naughtWins());
         crossColumn.setId("cross-column");
@@ -70,14 +69,12 @@ public class TicView extends VBox {
 
         statTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         statTable.getColumns().addAll(crossColumn, naughtColumn);
-        //loadSampleData();
 
         ButtonBar statButtons = new ButtonBar();
         Button newGameButton = new Button("New Game");
         newGameButton.setOnAction(event -> {
             viewModel.processNew();
             clearGrid();
-            gameInfoLabel.setText("Put X in an empty box");
         });
         Button saveButton = new Button("Save");
         Button loadButton = new Button("Load");
