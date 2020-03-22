@@ -1,6 +1,7 @@
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -14,22 +15,51 @@ import java.util.List;
 
 public class TicTacToeView extends VBox {
 
+    private Stage stage;
+    private TicTacToeViewModel viewModel = new TicTacToeViewModel();
+
     private List<List<Button>> gridMatrix = new ArrayList<>();
+    private GridPane grid = new GridPane();
+    private Label gameInfoLabel = new Label();
+
+    private ListProperty<GameResultObject> gameResults = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private TableView<GameResultObject> statTable = new TableView<>();
+
+    private Button nextRoundButton = new Button("Next Round");
+
+    private ButtonBar statButtonBar = new ButtonBar();
+    private Button newGameButton = new Button("New Game");
+    private Button saveButton = new Button("Save");
+    private Button loadButton = new Button("Load");
+
 
     public TicTacToeView(Stage primaryStage) {
-        TicTacToeViewModel viewModel = new TicTacToeViewModel();
-
-        ListProperty<GameResultObject> gameResults = new SimpleListProperty<>(FXCollections.observableArrayList());
+        stage = primaryStage;
         gameResults.bind(viewModel.resultsProperty());
 
-        TableView<GameResultObject> statTable = new TableView<>();
-        statTable.setItems(gameResults);
+        initGrid();
 
-        Label gameInfoLabel = new Label();
         gameInfoLabel.setId("info-label");
         gameInfoLabel.textProperty().bindBidirectional(viewModel.labelTextProperty());
 
-        GridPane grid = new GridPane();
+        initButtons();
+
+        VBox leftSection = new VBox();
+        Separator separator = new Separator();
+        leftSection.getChildren().addAll(grid, separator, gameInfoLabel, nextRoundButton);
+
+        initStatTable();
+
+        VBox rightSection = new VBox();
+        rightSection.getChildren().addAll(statTable, statButtonBar);
+
+        HBox mainWrap = new HBox();
+        mainWrap.getChildren().addAll(leftSection, rightSection);
+
+        getChildren().addAll(mainWrap);
+    }
+
+    private void initGrid() {
         grid.getStyleClass().add("grid-pane");
         grid.setVgap(10);
         grid.setHgap(10);
@@ -51,10 +81,22 @@ public class TicTacToeView extends VBox {
                 gridMatrix.get(i).add(temp);
             }
         }
+    }
 
-        Separator sep = new Separator();
+    private void initStatTable() {
+        statTable.setItems(gameResults);
+        TableColumn<GameResultObject, Integer> crossColumn = new TableColumn<>("X");
+        TableColumn<GameResultObject, Integer> naughtColumn = new TableColumn<>("O");
+        crossColumn.setCellValueFactory(new PropertyValueFactory<>("crossWins"));
+        naughtColumn.setCellValueFactory(new PropertyValueFactory<>("naughtWins"));
+        crossColumn.setId("cross-column");
+        naughtColumn.setId("naught-column");
 
-        Button nextRoundButton = new Button("Next Round");
+        statTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        statTable.getColumns().addAll(crossColumn, naughtColumn);
+    }
+
+    private void initButtons() {
         nextRoundButton.setId("next-round");
         nextRoundButton.visibleProperty().bindBidirectional(viewModel.gameDoneProperty());
         nextRoundButton.setOnAction(event -> {
@@ -62,32 +104,16 @@ public class TicTacToeView extends VBox {
             clearGrid();
         });
 
-        VBox left = new VBox();
-        left.getChildren().addAll(grid, sep, gameInfoLabel, nextRoundButton);
-
-        TableColumn<GameResultObject, String> crossColumn = new TableColumn<>("X");
-        TableColumn<GameResultObject, String> naughtColumn = new TableColumn<>("O");
-        crossColumn.setCellValueFactory(data -> data.getValue().crossWins());
-        naughtColumn.setCellValueFactory(data -> data.getValue().naughtWins());
-        crossColumn.setId("cross-column");
-        naughtColumn.setId("naught-column");
-
-        statTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        statTable.getColumns().addAll(crossColumn, naughtColumn);
-
-        ButtonBar statButtons = new ButtonBar();
-        Button newGameButton = new Button("New Game");
         newGameButton.setOnAction(event -> {
             viewModel.processNew();
             clearGrid();
         });
-        Button saveButton = new Button("Save");
+
         saveButton.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
             fileChooser.getExtensionFilters().add(extFilter);
-
-            File savedFile = fileChooser.showSaveDialog(primaryStage);
+            File savedFile = fileChooser.showSaveDialog(stage);
             try {
             viewModel.processSave(savedFile);
             } catch (IOException e) {
@@ -97,10 +123,10 @@ public class TicTacToeView extends VBox {
                 errorDialog.showAndWait();
             }
         });
-        Button loadButton = new Button("Load");
+
         loadButton.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
-            File selectedFile = fileChooser.showOpenDialog(primaryStage);
+            File selectedFile = fileChooser.showOpenDialog(stage);
             try {
                 viewModel.processLoad(selectedFile);
             } catch (IOException e) {
@@ -111,15 +137,7 @@ public class TicTacToeView extends VBox {
             }
         });
 
-        statButtons.getButtons().addAll(newGameButton, saveButton, loadButton);
-
-        VBox right = new VBox();
-        right.getChildren().addAll(statTable, statButtons);
-
-        HBox mainWrap = new HBox();
-        mainWrap.getChildren().addAll(left, right);
-
-        getChildren().addAll(mainWrap);
+        statButtonBar.getButtons().addAll(newGameButton, saveButton, loadButton);
     }
 
     private void clearGrid() {
@@ -131,19 +149,19 @@ public class TicTacToeView extends VBox {
     }
 
     public static class GameResultObject {
-        private SimpleStringProperty crossWins;
-        private SimpleStringProperty naughtWins;
+        private SimpleIntegerProperty crossWins;
+        private SimpleIntegerProperty naughtWins;
 
         public GameResultObject(Integer crossWins, Integer naughtWins) {
-            this.crossWins = new SimpleStringProperty(crossWins.toString());
-            this.naughtWins =  new SimpleStringProperty(naughtWins.toString());
+            this.crossWins = new SimpleIntegerProperty(crossWins);
+            this.naughtWins =  new SimpleIntegerProperty(naughtWins);
         }
 
-        public StringProperty crossWins() {
+        public IntegerProperty crossWinsProperty() {
             return crossWins;
         }
 
-        public StringProperty naughtWins() {
+        public IntegerProperty naughtWinsProperty() {
             return naughtWins;
         }
     }

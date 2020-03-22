@@ -11,11 +11,10 @@ public class Main extends Application {
 
         primaryStage.setTitle("Tic Tac Toe");
         primaryStage.setScene(new Scene(view));
-        primaryStage.getScene().getStylesheets().add("file:resources/style.css");
-        primaryStage.getIcons().add(new Image("file:resources/img.png"));
+        primaryStage.getScene().getStylesheets().add("file:resources/css/style.css");
+        primaryStage.getIcons().add(new Image("file:resources/images/img.png"));
         primaryStage.show();
     }
-
 
     public static void main(String[] args) {
         launch(args);

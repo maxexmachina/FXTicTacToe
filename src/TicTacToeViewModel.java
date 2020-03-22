@@ -91,8 +91,8 @@ public class TicTacToeViewModel {
     }
 
     private void setGameScore() {
-        results.get(0).crossWins().setValue(xScore.toString());
-        results.get(0).naughtWins().setValue(oScore.toString());
+        results.get(0).crossWinsProperty().setValue(xScore);
+        results.get(0).naughtWinsProperty().setValue(oScore);
     }
 
     public void processNext() {
@@ -114,24 +114,25 @@ public class TicTacToeViewModel {
         if (file != null) {
             List<String> resultList = new ArrayList<>();
             for (TicTacToeView.GameResultObject res : results.get()) {
-                resultList.add(res.crossWins().getValue() + "," + res.naughtWins().getValue());
+                resultList.add(res.crossWinsProperty().getValue() + "," + res.naughtWinsProperty().getValue());
             }
             FileUtils.writeAll(file.getPath(), resultList);
         }
     }
 
     public void processLoad(File file) throws IOException {
+        final String SEPARATOR = ",";
         if (file != null) {
             results.clear();
             List<String> loadedList = FileUtils.readAll(file.getPath());
             for (String string: loadedList) {
-                String[] parsed = string.split(",");
+                String[] parsed = string.split(SEPARATOR);
                 int x = Integer.parseInt(parsed[0]);
                 int o = Integer.parseInt(parsed[1]);
                 results.add(new TicTacToeView.GameResultObject(x, o));
             }
-            xScore = Integer.parseInt(results.get(0).crossWins().getValue());
-            oScore = Integer.parseInt(results.get(0).naughtWins().getValue());
+            xScore = results.get(0).crossWinsProperty().getValue();
+            oScore = results.get(0).naughtWinsProperty().getValue();
         }
     }
 }
