@@ -10,10 +10,11 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TicTacToeView extends VBox {
 
-    private ArrayList<ArrayList<Button>> gridMatrix = new ArrayList<>();
+    private List<List<Button>> gridMatrix = new ArrayList<>();
 
     public TicTacToeView(Stage primaryStage) {
         TicTacToeViewModel viewModel = new TicTacToeViewModel();

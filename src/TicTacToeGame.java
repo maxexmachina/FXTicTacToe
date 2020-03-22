@@ -2,9 +2,10 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TicTacToeGame {
-    private ArrayList<ArrayList<Integer>> gridState = new ArrayList<>();
+    private List<List<Integer>> gridState = new ArrayList<>();
     private Integer currentPlayer;
     private Integer turnCount;
     private String gameResult;
