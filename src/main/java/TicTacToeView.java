@@ -18,7 +18,7 @@ public class TicTacToeView extends VBox {
     private Stage stage;
     private TicTacToeViewModel viewModel = new TicTacToeViewModel();
 
-    private List<List<Button>> gridMatrix = new ArrayList<>();
+    private List<List<Tile>> gridMatrix = new ArrayList<>();
     private GridPane grid = new GridPane();
     private Label gameInfoLabel = new Label();
 
@@ -71,8 +71,14 @@ public class TicTacToeView extends VBox {
                 int finalJ = j;
                 int finalI = i;
                 temp.setOnAction(event -> {
-                    temp.setText(viewModel.processBoxClick(finalI, finalJ));
-                    });
+                    if (!temp.isMarked()) {
+                        Integer result = viewModel.processTileClick(finalI, finalJ, gridMatrix);
+                        temp.setTileMark(result);
+                        String text = (result == 1) ? "X" : "O";
+                        temp.setText(text);
+                        temp.setMarked(true);
+                    }
+                });
 
                 temp.disableProperty().bindBidirectional(viewModel.gameDoneProperty());
                 temp.setId("game-button");
@@ -144,6 +150,8 @@ public class TicTacToeView extends VBox {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 gridMatrix.get(i).get(j).setText("");
+                gridMatrix.get(i).get(j).setTileMark(-1);
+                gridMatrix.get(i).get(j).setMarked(false);
             }
         }
     }

@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TicTacToeViewModel {
-    private TicTacToeGame game;
     private StringProperty labelText = new SimpleStringProperty("Put X in an empty box");
     private BooleanProperty gameDone = new SimpleBooleanProperty();
     private ListProperty<TicTacToeView.GameResultObject> results = new SimpleListProperty<>(FXCollections.observableArrayList());
     private Integer oScore;
     private Integer xScore;
+    private Integer currentPlayer;
+    private Integer turnCount;
+    private String gameResult;
 
     public boolean isGameDone() {
         return gameDone.get();
@@ -40,55 +42,86 @@ public class TicTacToeViewModel {
     }
 
     public TicTacToeViewModel() {
-        game = new TicTacToeGame();
+        setGameDone(false);
         oScore = 0;
         xScore = 0;
+        currentPlayer = 1;
+        turnCount = 0;
         results.add(new TicTacToeView.GameResultObject(0, 0));
-        gameDone.bindBidirectional(game.gameDoneProperty());
     }
 
-    public String processBoxClick(int i, int j) {
-        int clickResult = game.processMove(i , j);
-        if (isGameDone() && game.getGameResult().equals("Draw")) {
-            xScore++;
-            oScore++;
-            setGameScore();
-            setLabelText(game.getGameResult());
-
-            if (clickResult == 1) {
-                return "X";
+    public Integer processTileClick(int i, int j, List<List<Tile>> gridState) {
+        gridState.get(i).get(j).setTileMark(currentPlayer);
+        turnCount++;
+        checkGameResult(i, j, gridState);
+        if (isGameDone()) {
+            setLabelText(gameResult);
+            if (gameResult.equals("Draw")) {
+                xScore++;
+                oScore++;
+                setGameScore();
+            } else if (currentPlayer == 1) {
+                xScore++;
+                setGameScore();
             } else {
-                return "O";
-            }
-        } else if (!game.getGameResult().equals("Draw")) {
-            if (clickResult == 1) {
-                if (isGameDone()) {
-                    xScore++;
-                    setGameScore();
-                    setLabelText(game.getGameResult());
-                } else
-                    setLabelText("Put O in an empty box");
-
-                return "X";
-
-            } else if (clickResult == 0) {
-                if (isGameDone()) {
-                    oScore++;
-                    setGameScore();
-                    setLabelText(game.getGameResult());
-                } else
-                    setLabelText("Put X in an empty box");
-
-                return "O";
-
-                // При нажатии на зянятые ячейки
-            } else if (clickResult == 2) {
-                return "O";
-            } else if (clickResult == 3) {
-                return "X";
+                oScore++;
+                setGameScore();
             }
         }
-        return "Something";
+        Integer clickResult = currentPlayer;
+        if (!isGameDone()) {
+            currentPlayer = (currentPlayer == 1) ? 0 : 1;
+            String labelText = "Put " + ((currentPlayer == 1) ? "X" : "O") + " in an empty box";
+            setLabelText(labelText);
+        }
+        return clickResult;
+    }
+
+    private void checkGameResult(int i, int j, List<List<Tile>> grid) {
+        if (turnCount > 4) {
+            if (winCheck(i , j, grid)) {
+                setGameDone(true);
+                gameResult = "Player " + ((currentPlayer == 1) ? "X" : "O") + " wins";
+            } else if (turnCount == 8) {
+                setGameDone(true);
+                gameResult = "Draw";
+            }
+        }
+    }
+
+    public boolean winCheck(int idx, int jdx, List<List<Tile>> gridState) {
+        for (int i = 0; i < 3; i++) {
+            if (!gridState.get(idx).get(i).getTileMark().equals(currentPlayer))
+                break;
+            if (i == 2)
+                return true;
+        }
+
+        for (int i = 0; i < 3; i++) {
+            if (!gridState.get(i).get(jdx).getTileMark().equals(currentPlayer))
+                break;
+            if (i == 2)
+                return true;
+        }
+
+        if (idx == jdx) {
+            for (int i = 0; i < 3; i++) {
+                if (!gridState.get(i).get(i).getTileMark().equals(currentPlayer))
+                    break;
+                if (i == 2)
+                    return true;
+            }
+        }
+
+        if (idx + jdx == 2) {
+            for (int i = 0; i < 3; i++) {
+                if (!gridState.get(i).get(2 - i).getTileMark().equals(currentPlayer))
+                    break;
+                if (i == 2)
+                    return true;
+            }
+        }
+        return false;
     }
 
     private void setGameScore() {
@@ -97,8 +130,10 @@ public class TicTacToeViewModel {
     }
 
     public void processNext() {
-        game.resetGame();
+        currentPlayer = 1;
+        turnCount = 0;
         setLabelText("Put X in an empty box");
+        setGameDone(false);
     }
 
     public void processNew() {
@@ -108,7 +143,8 @@ public class TicTacToeViewModel {
         oScore = 0;
         xScore = 0;
         setGameDone(false);
-        game.resetGame();
+        currentPlayer = 1;
+        turnCount = 0;
     }
 
     public void processSave(File file) throws IOException {
