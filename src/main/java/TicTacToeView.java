@@ -67,7 +67,7 @@ public class TicTacToeView extends VBox {
         for (int i = 0; i < 3; i++) {
             gridMatrix.add(new ArrayList<>());
             for (int j = 0; j < 3; j++) {
-                Button temp = new Button();
+                Tile temp = new Tile();
                 int finalJ = j;
                 int finalI = i;
                 temp.setOnAction(event -> {

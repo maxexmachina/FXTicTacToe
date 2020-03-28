@@ -1,5 +1,6 @@
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import utils.FileUtils;
 
 import java.io.File;
 import java.io.IOException;

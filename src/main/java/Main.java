@@ -11,8 +11,8 @@ public class Main extends Application {
 
         primaryStage.setTitle("Tic Tac Toe");
         primaryStage.setScene(new Scene(view));
-        primaryStage.getScene().getStylesheets().add("file:resources/css/style.css");
-        primaryStage.getIcons().add(new Image("file:resources/images/img.png"));
+        primaryStage.getScene().getStylesheets().add("file:src/main/resources/css/style.css");
+        primaryStage.getIcons().add(new Image("file:src/main/resources/images/img.png"));
         primaryStage.show();
     }
 
